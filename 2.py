@@ -21,7 +21,9 @@ def find_box_id_one_char_diff():
     for ida in box_ids:
         for idb in box_ids[1:]:
             if fuzz.ratio(ida, idb) == 96:
-                return ida, idb
+                zipit = list(zip(ida, idb))
+                common_str = ''.join([x[0] for x in zipit if x[0] == x[1]])
+                return common_str
 
 
 print('Part 1 answer is: {}'.format(find_box_checksum()))
