@@ -73,8 +73,6 @@ for claim in Fabric.CLAIMS:
 					X += 1
 				elif claimObj.MATRIX[y + y_incrementer][x + x_incrementer] == '.':
 					claimObj.MATRIX[y + y_incrementer][x + x_incrementer] = '#'
-				elif claimObj.MATRIX[y + y_incrementer][x + x_incrementer] == 'X':
-					continue
 			except IndexError:
 				continue
 			x_incrementer += 1
@@ -82,15 +80,6 @@ for claim in Fabric.CLAIMS:
 
 
 print('X', X)
-
-# h = 0
-# for x in Fabric.MATRIX:
-# 	for y in x:
-# 		if y != 'X':
-# 			print(y)
-# 			h += 1
-#
-# print(h)
 
 
 
