@@ -1,6 +1,6 @@
 import re
 import datetime
-from collections import Counter, OrderedDict
+from collections import Counter
 
 
 class GuardSchedule:
