@@ -4,15 +4,15 @@ from collections import Counter
 
 
 class GuardSchedule:
+
     SLEEP_SCHEDULE = ''
     SLEEP_SCHEDULE_DICT = {}
     AGGREGATE_SLEEP_TIMES = {}
     GUARD_SLEEP_MINUTES = {}
     SLEEPIEST_GUARD = 0
-    SLEEPIEST_GUARD_TOTAL_SLEEP_TIME = 0
     SLEEPIEST_MINUTE = 0
+    SLEEPIEST_MINUTE_ALL_GUARDS = 0
     SLEEPIEST_MINUTE_COUNT = 0
-
 
     @classmethod
     def create_ordered_sleep_schedule(cls, f):
@@ -76,47 +76,47 @@ class GuardSchedule:
                             [str(x) for x in range(
                                 sleep_start.minute, sleep_end.minute + 1)]
                         )
-
                 except IndexError:
                     continue
         d = {k: sum(v) for k, v in GuardSchedule.AGGREGATE_SLEEP_TIMES.items()}
         GuardSchedule.SLEEPIEST_GUARD = max(d, key=lambda x: d.get(x))
 
     @classmethod
-    def find_sleepiest_minute(cls, g):
-        all_min_dict = Counter(GuardSchedule.GUARD_SLEEP_MINUTES[g])
+    def find_sleepiest_minute(cls):
+        all_min_dict = Counter(
+            GuardSchedule.GUARD_SLEEP_MINUTES[GuardSchedule.SLEEPIEST_GUARD])
         GuardSchedule.SLEEPIEST_MINUTE = max(
             all_min_dict, key=lambda x: all_min_dict.get(x)
         )
-        for minute, count in all_min_dict.items():
-            if int(count) > GuardSchedule.SLEEPIEST_MINUTE_COUNT:
-                GuardSchedule.SLEEPIEST_MINUTE_COUNT = int(count)
-                GuardSchedule.SLEEPIEST_MINUTE = minute
 
-        # GuardSchedule.SLEEPIEST_MINUTE_COUNT = all_min_dict.get(x)
+    @classmethod
+    def find_sleepiest_minute_all_guards(cls):
+        for guard in GuardSchedule.GUARD_SLEEP_MINUTES:
+            if GuardSchedule.GUARD_SLEEP_MINUTES[guard]:
+                d = Counter(GuardSchedule.GUARD_SLEEP_MINUTES[guard])
+                sleepiest_min = max(d, key=lambda x: d.get(x))
+                if d.get(sleepiest_min) > GuardSchedule.SLEEPIEST_MINUTE_COUNT:
+                    GuardSchedule.SLEEPIEST_MINUTE_COUNT = d.get(sleepiest_min)
+                    GuardSchedule.SLEEPIEST_MINUTE_ALL_GUARDS = sleepiest_min
+                    GuardSchedule.SLEEPIEST_GUARD = guard
 
 
+def main():
+    GuardSchedule.create_ordered_sleep_schedule('sleep_schedule')
+    GuardSchedule.create_sleep_schedule_dict()
+    GuardSchedule.find_sleepiest_guard()
+    GuardSchedule.find_sleepiest_minute()
+    print('Part 1 answer is: {}'.format(
+        int(GuardSchedule.SLEEPIEST_GUARD) * int(GuardSchedule.SLEEPIEST_MINUTE))
+    )
+    GuardSchedule.find_sleepiest_minute_all_guards()
+    print('Part 2 answer is: {}'.format(
+        int(GuardSchedule.SLEEPIEST_GUARD) *
+        int(GuardSchedule.SLEEPIEST_MINUTE_ALL_GUARDS)))
 
 
-
-GuardSchedule.create_ordered_sleep_schedule('sleep_schedule')
-GuardSchedule.create_sleep_schedule_dict()
-most_asleep_minute = 0
-GuardSchedule.find_sleepiest_guard()
-for guard in GuardSchedule.GUARD_SLEEP_MINUTES:
-    if not GuardSchedule.GUARD_SLEEP_MINUTES[guard]:
-        continue
-    GuardSchedule.find_sleepiest_minute(guard)
-    if int(GuardSchedule.SLEEPIEST_MINUTE) > most_asleep_minute:
-        most_asleep_minute = int(GuardSchedule.SLEEPIEST_MINUTE)
-        GuardSchedule.SLEEPIEST_GUARD = guard
-
-print(GuardSchedule.SLEEPIEST_GUARD, most_asleep_minute)
-print('z',GuardSchedule.find_sleepiest_minute(GuardSchedule.SLEEPIEST_GUARD))
-# GuardSchedule.find_sleepiest_minute()
-# print('Part 1 answer is: {}'.format(
-#     int(GuardSchedule.SLEEPIEST_GUARD) * GuardSchedule.find_sleepiest_minute(GuardSchedule.SLEEPIEST_GUARD)
-
+if __name__ == '__main__':
+    main()
 
 
 
