@@ -27,15 +27,18 @@
 # else if both are destroyed, do not add to string and remove last char (addtostr=False)
 
 from collections import OrderedDict
-import time
+from string import ascii_lowercase
 
 
 class Polymer:
 
 	ORIG_POLYMER_STR = ''
 	ORIG_POLYMER_DICT = OrderedDict()
+	WORKING_POLYMER_STR = ''
 	WORKING_POLYMER_DICT = {}
 	NEW_POLYMER_STR = ''
+	POLYMER_LENGTH = 0
+	PROBLEM_UNIT = ''
 
 	@classmethod
 	def read_poly_str(cls):
@@ -52,7 +55,7 @@ class Polymer:
 		Polymer.WORKING_POLYMER_DICT = Polymer.ORIG_POLYMER_DICT.copy()
 
 	@classmethod
-	def polymer_checker(cls):
+	def polymer_reducer(cls):
 		i = 1
 		new_str = ''
 		reduced = 0
@@ -104,22 +107,47 @@ class Polymer:
 				new_str += chars
 				i += 1
 		Polymer.NEW_POLYMER_STR = new_str
+		# print(new_str)
 		if reduced:
 			Polymer.create_dict(Polymer.NEW_POLYMER_STR)
-			Polymer.polymer_checker()
+			Polymer.polymer_reducer()
+		# Polymer.POLYMER_LENGTH = len(Polymer.NEW_POLYMER_STR)
+
+	@classmethod
+	def unit_remover(cls, char):
+		Polymer.WORKING_POLYMER_STR = ''.join([
+			x for x in Polymer.ORIG_POLYMER_STR
+			if (x != char and x != char.upper())
+		]
+		)
+
+	@classmethod
+	def problem_unit_finder(cls):
+		problem_unit_tracker = {}
+		for char in ascii_lowercase:
+			# char = 'z'
+			Polymer.unit_remover(char)
+			# print(Polymer.WORKING_POLYMER_STR)
+			Polymer.create_dict(Polymer.WORKING_POLYMER_STR)
+			try:
+				Polymer.polymer_reducer()
+			except:
+				continue
+			problem_unit_tracker[char] = Polymer.NEW_POLYMER_STR
+			print(char, len(Polymer.NEW_POLYMER_STR))
 
 
 
-s = 'asdflkKjasdDfeoiuerRrRT'
-ans = 'asdfljasfeoiueT'
+
 Polymer.read_poly_str()
-Polymer.create_dict(Polymer.ORIG_POLYMER_STR)
-Polymer.polymer_checker()
-print(Polymer.NEW_POLYMER_STR)
-print(len(Polymer.NEW_POLYMER_STR))
-# assert ans == Polymer.NEW_POLYMER_STR
-
-
+Polymer.problem_unit_finder()
+# Polymer.create_dict(Polymer.ORIG_POLYMER_STR)
+# print(Polymer.WORKING_POLYMER_STR)
+# print(Polymer.WORKING_POLYMER_DICT)
+# Polymer.polymer_reducer()
+# print(Polymer.NEW_POLYMER_STR)
+# print(len(Polymer.NEW_POLYMER_STR))
+# # assert ans == Polymer.NEW_POLYMER_STR
 
 
 
